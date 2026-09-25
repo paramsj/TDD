@@ -1,0 +1,14 @@
+go test -v -> will show for each test
+
+if benchmarking
+
+go test -bench=.
+
+go test -bench=. -benchmem:
+
+
+The -benchmem flag reports information about memory allocations:
+
+    B/op: the number of bytes allocated per iteration
+
+    allocs/op: the number of memory allocations per iteration
