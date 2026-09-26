@@ -12,3 +12,6 @@ The -benchmem flag reports information about memory allocations:
     B/op: the number of bytes allocated per iteration
 
     allocs/op: the number of memory allocations per iteration
+
+
+Pointer Receivers will take in anything, it will find the address for you 
