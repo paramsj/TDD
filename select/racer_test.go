@@ -9,27 +9,44 @@ import (
 
 func TestRacer(t *testing.T) {
 
-	slowServer := makeServer(20)
-	fastServer := makeServer(0)
+	t.Run("compares speeds of servers, returning the url of the fastest one", func(t *testing.T) {
+		slowServer := makeServer(20 * time.Millisecond)
+		fastServer := makeServer(0 * time.Millisecond)
 
-	slowURL := slowServer.URL
-	fastURL := fastServer.URL
+		defer slowServer.Close()
+		defer fastServer.Close()
 
-	// fmt.Println(slowURL, fastURL)
-	want := fastURL
-	got := Racer(slowURL, fastURL)
+		slowURL := slowServer.URL
+		fastURL := fastServer.URL
 
-	if got != want {
-		t.Errorf("got %q, want %q", got, want)
-	}
+		want := fastURL
+		got, err := Racer(slowURL, fastURL)
 
-	slowServer.Close()
-	fastServer.Close()
+		if err != nil {
+			t.Fatalf("did not expect an error but got one %v", err)
+		}
+
+		if got != want {
+			t.Errorf("got %q, want %q", got, want)
+		}
+	})
+
+	t.Run("returns an error if a server doesn't respond within the specified time", func(t *testing.T) {
+		server := makeServer(25 * time.Millisecond)
+
+		defer server.Close()
+
+		_, err := ConfigurableRacer(server.URL, server.URL, 20*time.Millisecond)
+
+		if err == nil {
+			t.Error("expected an error but didn't get one")
+		}
+	})
 }
 
 func makeServer(delay time.Duration) *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		time.Sleep(delay * time.Millisecond)
+		time.Sleep(delay)
 		w.WriteHeader(http.StatusOK)
 	}))
 }
