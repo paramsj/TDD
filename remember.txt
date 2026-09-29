@@ -15,3 +15,8 @@ The -benchmem flag reports information about memory allocations:
 
 
 Pointer Receivers will take in anything, it will find the address for you 
+
+
+go race -v to test for race conditions
+go vet
+
