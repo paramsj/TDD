@@ -1,3 +1,22 @@
-	"http://google.com":          true,
-		"http://blog.gypsydave5.com": true,
-		"waat://furhurterwe.geds":    false,
+package concurrency
+
+import (
+	"testing"
+	"time"
+)
+
+func slowStubWebsiteChecker(_ string) bool {
+	time.Sleep(20 * time.Millisecond)
+	return true
+}
+
+func BenchmarkCheckWebsites(b *testing.B) {
+	urls := make([]string, 100)
+	for i := 0; i < len(urls); i++ {
+		urls[i] = "a url"
+	}
+
+	for b.Loop() {
+		CheckWebsites(slowStubWebsiteChecker, urls)
+	}
+}
