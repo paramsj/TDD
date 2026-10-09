@@ -1,0 +1,44 @@
+package readingfiles
+
+import (
+	"reflect"
+	"testing"
+	"testing/fstest"
+)
+
+func assertPost(t *testing.T, got Post, want Post) {
+	t.Helper()
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %+v, want %+v", got, want)
+	}
+}
+
+func TestNewBlogPosts(t *testing.T) {
+	const (
+		firstBody = `Title: Post 1
+Description: Description 1`
+		secondBody = `Title: Post 2
+Description: Description 2`
+	)
+
+	fs := fstest.MapFS{
+		"hello world.md":  {Data: []byte(firstBody)},
+		"hello-world2.md": {Data: []byte(secondBody)},
+	}
+
+	posts, err := NewPostsFromFS(fs)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+	// if len(posts) != len(fs) {
+	// 	t.Errorf("got %d, wanted %d", len(posts), len(fs))
+	// }
+	got := posts[0]
+	want := Post{Title: "Post 1"}
+
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %+v, want %+v", got, want)
+	}
+
+}
